@@ -21,7 +21,7 @@ class Questionnaire extends Controller
         $questionnaire->email_id = $id;
         $questionnaire->user_id = Auth::id();
         $questionnaire->save();
-        return redirect(route('show'));
+        //return redirect(route('show'));
     }
 
     public function showFollowUp()

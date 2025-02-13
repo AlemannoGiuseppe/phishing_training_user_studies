@@ -1,10 +1,15 @@
 <?php
 
+use App\Http\Controllers\BFI2XSController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Questionnaire;
+use App\Http\Controllers\QuestionnairesController;
+use App\Http\Controllers\StPIIBController;
+use App\Http\Controllers\TEIQueSFController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\Livewire\TermsOfServiceController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +38,7 @@ Route::get('/no-consent', function () {
 Route::get('/consent-grant', function (){
     session(['consent' => '1']);
     session(['startStudy' => '1']);
+    //return redirect(route('questionnaires'));
     return redirect(route('show', ['folder' => 'inbox']));
 })->name('consent');
 
@@ -51,12 +57,14 @@ Route::middleware([
     \App\Http\Middleware\StudyAuth::class,
     'log'
 ])->group(function () {
+
     Route::get('/welcome', function () {
         if (Auth::user()->followUpQuestionnaire != null) {  // study already completed
             return redirect(route('thankyou'));
         } else {
             if (session()->has('consent')) {
                 return redirect(route('show', ['folder' => 'inbox']));
+                //return redirect(route('questionnaires'));
             }
             else {
                 return view('welcome');
@@ -70,6 +78,7 @@ Route::middleware([
         }
         return view("emailquestionnaire")->with('warning_type', Auth::user()->warning_type);
     })->name('next_step');
+
     Route::post('/nextstep/{mail?}', [Questionnaire::class, 'storeEmailQuestionnaire']); //->name('next_step');
 
     Route::get('/finish', function (){
@@ -86,4 +95,29 @@ Route::middleware([
     Route::get('/warning_browser', [MailController::class, 'warning_browser'])->name('warning_browser');
 
     Route::get('/{folder?}/{id?}', [MailController::class, 'show'])->name('show');
+
+    Route::get('/questionnaires', [QuestionnairesController::class, 'index'])->name('questionnaires');
+
+    Route::post('/big-five-inventory', [BFI2XSController::class, 'create'])->name('big-five-inventory.create');
+    Route::post('/susceptibility-to-persuasion-ii', [StPIIBController::class, 'create'])->name('susceptibility-to-persuasion-ii.create');
+    Route::post('/trait-emotional-intelligence', [TEIQueSFController::class, 'create'])->name('trait-emotional-intelligence.create');
+
+    Route::post('/questionnaire1', [QuestionnairesController::class, 'showQuestionnaire1'])->name('questionnaire1');
+    Route::get('/questionnaire2', [QuestionnairesController::class, 'showQuestionnaire2'])->name('questionnaire2');
+    Route::get('/questionnaire3', [QuestionnairesController::class, 'showQuestionnaire3'])->name('questionnaire3');
+
+
+    Route::post('/save-email-classification', [QuestionnairesController::class, 'saveEmailClassification'])->name('save-email-classification');
+
+    Route::post('/set-session', function (Request $request) {
+        $questionnaire = $request->input('questionnaire');
+        session([$questionnaire => true]);
+
+        if ($questionnaire === 'questionnaires_done') {
+            return redirect(route('show', ['folder' => 'inbox']));
+        }
+
+        return redirect()->route(str_replace('_view', '', $questionnaire));
+    })->name('set.session');
+    
 });

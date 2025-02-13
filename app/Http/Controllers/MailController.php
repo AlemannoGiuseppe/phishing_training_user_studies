@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request as FRequest;
 
 class MailController extends Controller
 {
@@ -15,10 +17,28 @@ class MailController extends Controller
 
     public function show($folder = 'inbox', $id = null)
     {
+        Log::info('Current route: ' . FRequest::url());
+        Log::info('Current session:', session()->all());
+
         if (!session()->has('consent')) {
             return redirect(route('welcome'));
         }
         info("ID " . $id);
+
+        if (!session()->has('questionnaires_done')) {
+
+            if (session()->has('questionnaire1_view') && session('questionnaire1_view') === true) {
+                return view('questionnaires.bfi2xs');
+            } elseif (session()->has('questionnaire2_view') && session('questionnaire2_view') === true) {
+                return view('questionnaires.stp-ii-b');
+            } elseif (session()->has('questionnaire3_view') && session('questionnaire3_view') === true) {
+                return view('questionnaires.tei-que-sf');
+            }
+            
+            return view('questionnaires_screen');
+
+        }
+
         $emails = DB::table('emails')
             ->where('type', $folder)
             ->get();

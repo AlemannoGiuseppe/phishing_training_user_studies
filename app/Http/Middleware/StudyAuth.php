@@ -22,7 +22,6 @@ class StudyAuth
     {
         if (Auth::user() === null) {
             $least_popular_condition = $this->getWarningTypeToAssign();
-
             $new_user = new User();
             $new_user->name = "Alice";
             $new_user->email = 'alice1994@livemail.it';
