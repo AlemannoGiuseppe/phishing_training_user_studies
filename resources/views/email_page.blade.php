@@ -20,10 +20,15 @@ else
     <x-slot name="slot">
         <div style="position: sticky; top: 0; left: 0; z-index: 10;"
              class="p-6 shadow-lg bg-gray-700 text-white flash-element">
-            <p>
-                <span class="font-semibold">GOAL:</span> Please READ ALL THE EMAILS in the inbox and check that the links in them, if any, are working. Please behave as naturally as you would interact with your own email client.
-                The study ends when you have interacted with all the emails.
-            </p>
+            @if(session('post_phase'))
+                <p>
+                    <span class="font-semibold">POST-TRAINING GOAL:</span> Please review all the emails in your inbox once again and now answer based on the knowledge you've gained during the training.
+                </p>
+            @else
+                <p>
+                    <span class="font-semibold">PRE-TRAINING GOAL:</span> For each email, determine if it is a phishing attempt and rate your confidence on a scale of 1 to 7.
+                </p>
+            @endif
         </div>
 
         <!-- Task presentation modal -->
@@ -32,32 +37,36 @@ else
             <div class="relative p-4 w-full max-w-2xl max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                    <!-- Modal header -->
-                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                            GOAL
-                        </h3>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="p-4 md:p-5 space-y-4">
-                        <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            {{-- We ask you to imagine that you are Alice, a 28-year-old woman living in Rome, Italy.<br>
-                            Alice uses several social networks, including Instagram, Facebook, Twitter and TikTok. Alice also
-                            uses eBay and Amazon to shop online with her Italian credit card. Alice loves music and goes to
-                            live concerts every month.<br>
-                            Alice works for an IT company and has agreed to test a new email client that her company has
-                            recently introduced. To test the new email client, Alice has to interact with it by READING ALL her
-                            emails in her inbox and checking that any links in them work. --}}
-
-                            Please carefully read all the emails in the inbox of the following email client. For each email, you will need to:
-                            <br>- Indicate whether you believe it is a phishing attempt or not.
-                            <br>- Rate your confidence in your decision.<br>
-                            Both responses must be provided in the designated fields for each email.
-
-                            <!-- Please READ ALL THE EMAILS in the inbox and check that the links in them, if any, are working. -->
-                            {{-- <br>Please behave as naturally as you would interact with your own email client.
-                            <br>The study ends when you have interacted with all the emails.</p> --}}
-                    </div>
+                    @if(session('post_phase'))
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                POST-TRAINING GOAL:
+                            </h3>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5 space-y-4">
+                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                Please review all the emails in your inbox once again and now answer based on the knowledge you've gained during the training.
+                            </p>
+                        </div>
+                    @else
+                        <!-- Modal header -->
+                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                PRE-TRAINING GOAL:
+                            </h3>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="p-4 md:p-5 space-y-4">
+                            <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                                Please carefully read each email in the inbox below. For every email, you need to:
+                                <br>- Determine whether you believe it is a phishing attempt or not.
+                                <br>- Rate how confident you are in your decision on a scale of 1 to 7.<br>
+                                Ensure both responses are provided in the designated fields for each email.
+                            </p>
+                        </div>
+                    @endif
                     <!-- Modal footer -->
                     <div class="flex items-end p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600" style="flex-direction: row-reverse">
                         <button id="close-task-modal-btn" data-modal-hide="static-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Start</button>
@@ -578,7 +587,12 @@ else
                                             class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800"
                                         >
                                         @foreach($emails ?? [] as $email)
-                                            @if(count(DB::table('useremailquestionnaire')->where('user_id', \Illuminate\Support\Facades\Auth::id())->where('email_id', $email->id)->get()) > 0)
+                                        {{-- If we are in the post_phase, the count should be 2 to be marked as answered --}}
+                                            @if(DB::table('useremailquestionnaire')
+                                                ->where('user_id', \Illuminate\Support\Facades\Auth::id())
+                                                ->where('email_id', $email->id)
+                                                ->count() > (session('post_phase') ? 1 : 0)) 
+
                                                 <tr class="text-gray-700 cursor-not-allowed bg-gray-300">
                                             @else
                                                 <tr class="text-gray-700 cursor-pointer hover:bg-gray-200 hover:dark:bg-gray-600 dark:text-gray-400"

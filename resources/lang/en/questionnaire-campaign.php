@@ -291,13 +291,6 @@ return [
                 'focus' => 'Need for Unique Choice',
             ],
         ],
-        'result' => 'Susceptibility to Persuasion-II Questionnaire Result',
-        'partials' => [
-            'delete' => [
-                'delete' => 'Delete result',
-                'deleteMessage' => 'Are you sure you want to delete the result?',
-            ]
-        ]
     ],
     'bfi2xs' => [
         'bfi2xs' => 'Big Five Inventory',
@@ -373,13 +366,6 @@ return [
                 'focus' => 'Open-Mindedness',
             ],
         ],
-        'result' => 'Big Five Inventory Questionnaire Result',
-        'partials' => [
-            'delete' => [
-                'delete' => 'Delete result',
-                'deleteMessage' => 'Are you sure you want to delete the result?',
-            ]
-        ]
     ],
     'tei-que-sf' => [
         'teiQueSF' => 'Trait Emotional Intelligence Questionnaire',
@@ -517,12 +503,43 @@ return [
                 'focus' => 'Self Controle',
             ],
         ],
-        'result' => 'Trait Emotional Intelligence Questionnaire Result',
-        'partials' => [
-            'delete' => [
-                'delete' => 'Delete result',
-                'deleteMessage' => 'Are you sure you want to delete the result?',
-            ]
-        ]
+    ],
+    'trainingReactionQuestionnaire' => [
+        'trainingReactionQuestionnaire' => 'Training Reaction Questionnaire',
+        'submit' => 'Submit',
+        'compileError' => 'Compile all the questions!',
+        'scale' => [
+            '1' => 'Not at all',
+            '2' => 'Slightly',
+            '3' => 'Moderately',
+            '4' => 'Very',
+            '5' => 'Extremely',
+        ],
+        'question' => [
+            1 => [
+                'text' => 'How interesting did you find the course?',
+                'focus' => '',
+            ],
+            2 => [
+                'text' => 'How involved did you feel during the course activities?',
+                'focus' => '',
+            ],
+            3 => [
+                'text' => 'How much do you think the course has improved your skills?',
+                'focus' => '',
+            ],
+            4 => [
+                'text' => 'How useful do you think the course will be for your daily work?',
+                'focus' => '',
+            ],
+            5 => [
+                'text' => 'How satisfied are you with the trainer and his ability to convey the content?',
+                'focus' => '',
+            ],
+            6 => [
+                'text' => 'How satisfied do you feel that the course met your expectations?',
+                'focus' => '',
+            ],
+        ],
     ],
 ];

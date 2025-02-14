@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserEmailQuestionnaire;
 use Illuminate\Support\Facades\Log;
@@ -36,6 +37,18 @@ class QuestionnairesController extends Controller
         return view('questionnaires.tei-que-sf'); 
     }
 
+    public function showQuestionnaire4()
+    {
+        session(['questionnaire3_view' => true]);
+        return view('questionnaires.training_reaction_questionnaire');
+    }
+
+    public function finalData()
+    {
+        session(['questionnaire_4done' => true]);
+        return view('questionnaires.demographicQuestionnaire');
+    }
+
     public function saveEmailClassification(Request $request)
     {
         try {
@@ -64,7 +77,26 @@ class QuestionnairesController extends Controller
         }
     }
 
-
+    public function saveFinalData(Request $request)
+    {
+        // Demographic questionnaire
+        $user = Auth::user();
+        $user->gender = $request->gender;
+        $user->age = $request->age;
+        $user->num_hours_day_internet = $request->num_hours_day_internet;
+        $user->prolific_id = $request->prolific_id;
+        $answers = [];
+        for ($i=1; $i<=10; $i++){
+            $question = "cyber_".$i;
+            $answers[$question] = $request->$question;
+        }
+        $user->expertise_score = null;
+        $user->study_completed = Carbon::now();
+        $user->save();
+        session(['questionnaire_5done' => true]);
+        return redirect(route('thankyou'));
+        
+    }
 
 
 }
